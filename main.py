@@ -13,11 +13,14 @@ import threading
 # This is our window from QtCreator
 import mainwindow_auto
 import my_dialog
+import my_login
 
 # To counter up with button clicked
 n_detect=0
 
 dialog1=''
+login=''
+mainWin=''
 
 # Data variables
 data1=''
@@ -28,6 +31,8 @@ lbl_data2=''
 lbl_data3=''
 serial_data=''
 lbl_serial=''
+lbl_info=''
+le_login=''
 
 # Exit Flag
 exit_f=0
@@ -104,6 +109,24 @@ def receiveData():
         print ("Connection is closed!")
         ser_to_hmi.close()
 
+class Login_(QMainWindow, my_login.Ui_my_login):
+    def ret_press(self):
+        global lbl_info,le_login
+        if le_login.text()=='11111':
+            self.close()
+            mainWin.show()
+        else:
+            lbl_info.setText('Login Failed!')
+
+    def __init__(self):
+        global lbl_info,le_login
+        super(self.__class__, self).__init__()
+        self.setupUi(self)
+        lbl_info=self.lbl_info
+        le_login=self.le_login
+        self.le_login.returnPressed.connect(lambda: self.ret_press())
+
+
 # Sub Window
 class MyDialog(QMainWindow, my_dialog.Ui_my_dialog):
     def submitData(self):
@@ -143,6 +166,7 @@ class MainWindow(QMainWindow, mainwindow_auto.Ui_MainWindow):
         self.lcdNumber.display(n_detect)
         self.lbl2.setText('PB2 Clicked')
         pass
+        
     def pressInsert(self):
         # Current text of Combo Box
         self.lbl3.setText(self.comboBox.currentText())
@@ -159,9 +183,12 @@ class MainWindow(QMainWindow, mainwindow_auto.Ui_MainWindow):
         self.lbl6.setText(str(item.text()))
 
     def exitWindow(self):
-        global exit_f
+        global exit_f,lbl_info,le_login
         exit_f=1
+        lbl_info.setText('')
+        le_login.setText('')
         self.close()
+        login.show()
 
     def showdialog(self):
         dialog1.show()
@@ -173,6 +200,9 @@ class MainWindow(QMainWindow, mainwindow_auto.Ui_MainWindow):
         # d.setModal(True)
         # d.exec_()
         pass
+
+    def ret_press(self):
+        print ('Enter in pressed!')
 
     def __init__(self):
         global lbl_data1,lbl_data2,lbl_data3,lbl_serial
@@ -203,6 +233,10 @@ class MainWindow(QMainWindow, mainwindow_auto.Ui_MainWindow):
         # For serial data
         lbl_serial=self.lbl8
 
+        # LineEdit
+        le1=self.le1
+        self.le1.returnPressed.connect(lambda: self.ret_press())
+
         # LCD Number
         self.lcdNumber.display(n_detect)
         lcdNumber=self.lcdNumber
@@ -221,12 +255,15 @@ class MainWindow(QMainWindow, mainwindow_auto.Ui_MainWindow):
         
 # I feel better having one of these
 def main():
-    global dialog1
+    global dialog1,login,mainWin,le_login
     # a new app instance
     app = QApplication(sys.argv)
-    form = MainWindow()
-    form.show()
+    mainWin = MainWindow()
+    # form.show()
     dialog1 = MyDialog()
+    login = Login_()
+    login.show()
+    le_login.setFocus()
     # without this, the script exits immediately.
     sys.exit(app.exec_())
  

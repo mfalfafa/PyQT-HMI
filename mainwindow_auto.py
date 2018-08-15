@@ -120,6 +120,9 @@ class Ui_MainWindow(object):
         font.setPointSize(16)
         self.lbl8.setFont(font)
         self.lbl8.setObjectName("lbl8")
+        self.le1 = QtWidgets.QLineEdit(self.centralWidget)
+        self.le1.setGeometry(QtCore.QRect(390, 290, 191, 31))
+        self.le1.setObjectName("le1")
         MainWindow.setCentralWidget(self.centralWidget)
 
         self.retranslateUi(MainWindow)
