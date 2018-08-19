@@ -133,8 +133,9 @@ def doQueryCheckDTStatus(conn):
                 changeDTStatusCheck[1]=int(result[1][0])
 
 def doQueryCheckReason(conn):
-    global reasonChangeCheck,insertReason,id_,reason,first_execute,myConnection
+    global reasonChangeCheck,insertReason,id_,reason,first_execute
     cur=conn.cursor()
+    myConnection.commit()
     if first_execute==0:
         first_execute=1
         cur.execute("select id,data_dt from public.data_downtime order by id asc")
@@ -147,40 +148,8 @@ def doQueryCheckReason(conn):
         if reasonChangeCheck != result[i][0]:
             id_=result[i][0]
             reason=result[i][1]
-            # Check reason flag
-            flag=doQueryCheckReasonFlag(myConnection,id_)
-            updateReason=''
-            if flag==1:
-                updateReason=doQueryGetReason(myConnection,id_)
-                updateReason='\n'+updateReason+'\n~Submitted~'
-            dataReason=reason+updateReason
-            insertReason.emit(str(id_),str(dataReason))
+            insertReason.emit(str(id_),str(reason))
             reasonChangeCheck=result[i][0]
-
-def doQueryUpdateReason(conn, reasonData, id_):
-    cur=conn.cursor()
-    try:
-        cur.execute("UPDATE data_downtime set update_dt=('{0}'), update_flag=(1) where id={1}".format(reasonData,id_))
-    except Exception as e:
-        print ('update reason error : '+ e)
-    conn.commit()
-
-# Checking whether the reason has been submitted to database or not
-def doQueryCheckReasonFlag(conn, id_):
-    cur=conn.cursor()
-    cur.execute("select update_flag from public.data_downtime where id={0}".format(id_))
-    result = cur.fetchone()
-    result = result[0]
-    result=int(result)
-    return result
-
-# Get reason by id
-def doQueryGetReason(conn, id_):
-    cur=conn.cursor()
-    cur.execute("select update_dt from public.data_downtime where id={0}".format(id_))
-    result = cur.fetchone()
-    result = result[0]
-    return result
 
 # User functions
 def changeStatus(status):
@@ -242,7 +211,6 @@ class InsertReasonPage(QMainWindow, insertReasonForm.Ui_insertReason):
         mainWin.setEnabled(True)
 
     def submitData(self, mainWin):
-        global myConnection
         date_=self.lbl_date.text()
         time_=self.lbl_time.text()
         duration=self.lbl_duration.text()
@@ -251,11 +219,6 @@ class InsertReasonPage(QMainWindow, insertReasonForm.Ui_insertReason):
         alasan=self.cb_alasan.currentText()
         reason_data=alasan+' '+duration+'\n'+date_+' | '+time_
         lw=mainWin.lw_reason.currentItem()
-        # Insert reason data to Database and update flag
-        id_=lw.text().split('.')[0] # Get id for current list item
-        id_=int(id_)
-        doQueryUpdateReason(myConnection, reason_data, id_)
-        # Change text in listwidget in Mainwindow
         lw.setText(lw.text()+'\n'+reason_data+'\n~Submitted~')
         mainWin.setEnabled(True)
         self.close()
@@ -421,12 +384,14 @@ class MainWindow(QMainWindow, mainwindow_auto.Ui_MainWindow):
         lbl_status_2=self.lbl_status_2
         lbl_status_3=self.lbl_status_3
         lbl_status_4=self.lbl_status_4
+        # Qt scroll area
+        # self.scroll_area.setWidget(self.scroll_widget)
         # ListWidget
         self.lw_reason.setStyleSheet("""
             QListWidget::item {
                 border-style: solid;
                 border-width:1px;
-                border-color:#00aaff; 
+                border-color:black; 
                 background-color: #fff;
                 color:#000;
                 padding:5px 3px 5px 3px;
@@ -438,7 +403,7 @@ class MainWindow(QMainWindow, mainwindow_auto.Ui_MainWindow):
                 background-color:#00ff00;
             }
             QListWidget{
-                border:2px solid #00aaff;
+                border:2px solid #333;
                 padding:5px;
                 background-color:#eeeeee;
             }
@@ -464,6 +429,9 @@ class MainWindow(QMainWindow, mainwindow_auto.Ui_MainWindow):
         if flag!='Submitted':
             insertReasonPage.show()
             self.setEnabled(False)
+            # lw=self.sender().currentItem()
+            # data=item.text()+'\n-Submitted-'
+            # lw.setText(data)
         
     def addItem(self,id_,reason):
         data_=str(id_)+'. '+str(reason)
