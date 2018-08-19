@@ -4,6 +4,7 @@
 #### 19 August 2018 ####
 
 > Introduction
+
 This is a script made by Python that is used as an HMI (Human Machine Interface) on Raspi 3. This program is very lightweight in size and easy to use. 
 
 > Advantages
