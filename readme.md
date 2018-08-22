@@ -26,12 +26,12 @@ sudo apt-get install python-psycopg2
 
 To enable remote connection in PosgreSQL server IP, change the following files:
 1. pg_hba.conf		#192.168.10.151 = PostgreSQL Server IP
-```
 
-2. postgresql.conf
 Add this script :
 ```
 host all all 192.168.10.151/24
+```
+2. postgresql.conf
 ```
 listen_addresses = '*'
 ```
