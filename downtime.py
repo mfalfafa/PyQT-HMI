@@ -20,7 +20,7 @@ class Ui_downtimeForm(object):
         font.setWeight(75)
         self.label.setFont(font)
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("C:/Users/user/AppData/Local/Programs/Python/Python37-32/Scripts/HMI_v5/img_dt.png"))
+        self.label.setPixmap(QtGui.QPixmap("/home/pi/PyQt-HMI/img_dt.png"))
         self.label.setObjectName("label")
 
         self.retranslateUi(downtimeForm)

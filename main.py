@@ -68,11 +68,19 @@ minor_page_active=0
 first_execute=0
 
 # server PostgreSQL DB
-hostname='127.0.0.1'
+hostname='192.168.10.151'
 username='postgres'
 password='alfafa077'
 database='mv-hmi'
-myConnection = psycopg2.connect( host=hostname, user=username, password=password, dbname=database )
+port='5432'
+
+while 1:
+    try:
+        myConnection = psycopg2.connect( host=hostname, port=port, user=username, password=password, dbname=database )
+        break
+    except Exception as e:
+        print ('Trying to connect to Database Server...')
+        time.sleep(1)
 
 def doQueryLogin( conn , rfid ):
     cur = conn.cursor()
@@ -263,6 +271,12 @@ class InsertReasonPage(QMainWindow, insertReasonForm.Ui_insertReason):
     def __init__(self,mainWin):
         super(self.__class__, self).__init__()
         self.setupUi(self)
+        # Move to the center of window
+        qtRectangle = self.frameGeometry()
+        centerPoint = QDesktopWidget().availableGeometry().center()
+        qtRectangle.moveCenter(centerPoint)
+        self.move(qtRectangle.topLeft())
+
         self.pb_close.clicked.connect(lambda: self.closePage(mainWin))
         self.pb_submit.clicked.connect(lambda: self.submitData(mainWin))
         # Always on top
@@ -443,9 +457,7 @@ class MainWindow(QMainWindow, mainwindow_auto.Ui_MainWindow):
                 background-color:#eeeeee;
             }
             """)
-        QScroller.grabGesture(
-            self.lw_reason.viewport(), QScroller.LeftMouseButtonGesture
-        )
+        QScroller.grabGesture(self.lw_reason.viewport(), QScroller.LeftMouseButtonGesture)
         self.lw_reason.itemClicked.connect(self.itemClicked)
         
         checkReady=1        
