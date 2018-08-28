@@ -35,3 +35,13 @@ host all all 192.168.10.151/24
 ```
 listen_addresses = '*'
 ```
+
+```
+install python 3.5
+
+pip install --upgrade pip
+pip install psycopg2-binary
+pip install pyqt5
+pip install pyserial
+
+```

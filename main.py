@@ -68,7 +68,7 @@ minor_page_active=0
 first_execute=0
 
 # server PostgreSQL DB
-hostname='192.168.10.151'
+hostname='127.0.0.1'
 username='postgres'
 password='alfafa077'
 database='mv-hmi'
