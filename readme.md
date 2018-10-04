@@ -44,4 +44,9 @@ pip install psycopg2-binary
 pip install pyqt5
 pip install pyserial
 
+or
+
+sudo apt-get update
+sudo apt-get install qt5-default pyqt5-dev pyqt5-dev-tools
+
 ```
